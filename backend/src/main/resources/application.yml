@@ -1,0 +1,51 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ai-interview-platform
+
+  # ---- Default: H2 in-memory DB, zero setup required ----
+  datasource:
+    url: jdbc:h2:mem:aiinterviewdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+
+  # ---- To use Postgres instead, comment the H2 block above and uncomment below ----
+  # datasource:
+  #   url: jdbc:postgresql://localhost:5432/aiinterviewdb
+  #   username: postgres
+  #   password: postgres
+  # jpa:
+  #   hibernate:
+  #     ddl-auto: update
+  #   database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:ChangeThisSecretKeyToSomethingLongAndRandomInProduction123456}
+    expiration-ms: 86400000 # 24 hours
+
+  cors:
+    allowed-origins: ${FRONTEND_URL:http://localhost:5173}
+
+  ai:
+    gemini:
+      api-key: ${GEMINI_API_KEY:}
+      model: gemini-2.0-flash
+      base-url: https://generativelanguage.googleapis.com/v1beta/models
