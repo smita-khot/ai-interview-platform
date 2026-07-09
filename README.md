@@ -97,7 +97,6 @@ frontend/
 cd backend
 
 # Set your Gemini API key (required for AI features)
-export GEMINI_API_KEY=your_key_here      # macOS/Linux
 setx GEMINI_API_KEY "your_key_here"       # Windows (restart terminal after)
 
 mvn spring-boot:run
