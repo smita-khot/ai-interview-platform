@@ -12,11 +12,11 @@ Built with **Spring Boot** (Java), **React + TypeScript**, and **Google Gemini A
 
 This project is being built incrementally and documented step by step.
 
-- [x] Project scaffold & architecture
-- [x] Database entities (User, Interview, Question, Answer)
-- [x] JWT authentication (register/login)
-- [x] AI service integration (Gemini — question generation & answer evaluation)
-- [x] Interview flow API (start → answer → complete → report)
+- [ ] Project scaffold & architecture
+- [ ] Database entities (User, Interview, Question, Answer)
+- [ ] JWT authentication (register/login)
+- [ ] AI service integration (Gemini — question generation & answer evaluation)
+- [ ] Interview flow API (start → answer → complete → report)
 - [ ] React frontend (in progress)
 - [ ] Voice input (Web Speech API)
 - [ ] Coding round editor (Monaco)
