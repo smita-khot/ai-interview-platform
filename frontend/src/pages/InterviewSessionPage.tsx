@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
 import { Loader2, Send, ArrowRight, CheckCircle2, Mic, MicOff } from 'lucide-react'
+import Editor from '@monaco-editor/react'
 import { interviewApi } from '../api/interview'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { Question, Feedback } from '../types'
+
+const CODE_LANGUAGES = ['javascript', 'python', 'java', 'typescript', 'cpp', 'csharp', 'go'] as const
 
 const TYPE_LABEL: Record<string, string> = {
   BEHAVIORAL: 'Behavioral',
@@ -33,6 +36,7 @@ export default function InterviewSessionPage() {
   const [finishing, setFinishing] = useState(false)
   const [error, setError] = useState('')
   const [gradingMessageIndex, setGradingMessageIndex] = useState(0)
+  const [codeLanguage, setCodeLanguage] = useState<typeof CODE_LANGUAGES[number]>('javascript')
 
   const startTimeRef = useRef<number>(Date.now())
 
@@ -146,35 +150,61 @@ export default function InterviewSessionPage() {
 
         {!feedback ? (
           <>
-            <div className="relative">
-              <textarea
-                value={answerText}
-                onChange={(e) => setAnswerText(e.target.value)}
-                placeholder={
-                  question.type === 'CODING'
-                    ? 'Write your solution here (pseudocode or real code, both are fine)...'
-                    : 'Type your answer here, or use the mic to speak it...'
-                }
-                rows={question.type === 'CODING' ? 10 : 6}
-                className={`w-full bg-ink border border-ink-line rounded-xl px-4 py-3 pr-14 text-paper focus:outline-none focus:border-spotlight transition-colors resize-none ${
-                  question.type === 'CODING' ? 'font-mono text-sm' : ''
-                }`}
-              />
-              {voiceSupported && (
-                <button
-                  type="button"
-                  onClick={isListening ? stopListening : startListening}
-                  title={isListening ? 'Stop recording' : 'Speak your answer'}
-                  className={`absolute top-3 right-3 p-2 rounded-lg transition-colors ${
-                    isListening
-                      ? 'bg-red-500/20 text-red-400 animate-pulse'
-                      : 'bg-ink-soft text-paper-muted hover:text-spotlight'
-                  }`}
-                >
-                  {isListening ? <MicOff size={18} /> : <Mic size={18} />}
-                </button>
-              )}
-            </div>
+            {question.type === 'CODING' ? (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-paper-muted">Language</span>
+                  <select
+                    value={codeLanguage}
+                    onChange={(e) => setCodeLanguage(e.target.value as typeof CODE_LANGUAGES[number])}
+                    className="bg-ink-soft border border-ink-line rounded-lg px-3 py-1.5 text-sm text-paper focus:outline-none focus:border-spotlight"
+                  >
+                    {CODE_LANGUAGES.map((lang) => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="border border-ink-line rounded-xl overflow-hidden">
+                  <Editor
+                    height="360px"
+                    language={codeLanguage}
+                    theme="vs-dark"
+                    value={answerText}
+                    onChange={(value) => setAnswerText(value ?? '')}
+                    options={{
+                      minimap: { enabled: false },
+                      fontSize: 14,
+                      padding: { top: 16 },
+                      scrollBeyondLastLine: false,
+                    }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="relative">
+                <textarea
+                  value={answerText}
+                  onChange={(e) => setAnswerText(e.target.value)}
+                  placeholder="Type your answer here, or use the mic to speak it..."
+                  rows={6}
+                  className="w-full bg-ink border border-ink-line rounded-xl px-4 py-3 pr-14 text-paper focus:outline-none focus:border-spotlight transition-colors resize-none"
+                />
+                {voiceSupported && (
+                  <button
+                    type="button"
+                    onClick={isListening ? stopListening : startListening}
+                    title={isListening ? 'Stop recording' : 'Speak your answer'}
+                    className={`absolute top-3 right-3 p-2 rounded-lg transition-colors ${
+                      isListening
+                        ? 'bg-red-500/20 text-red-400 animate-pulse'
+                        : 'bg-ink-soft text-paper-muted hover:text-spotlight'
+                    }`}
+                  >
+                    {isListening ? <MicOff size={18} /> : <Mic size={18} />}
+                  </button>
+                )}
+              </div>
+            )}
             {isListening && (
               <p className="text-xs text-signal font-mono mt-2">
                 Listening... {interimText && <span className="text-paper-muted">"{interimText}"</span>}
