@@ -1,5 +1,8 @@
 # InterviewIQ — AI Mock Interview Platform
 
+**🔗 Live demo: [ai-interview-platform-theta-nine.vercel.app](https://ai-interview-platform-theta-nine.vercel.app)**
+*(Backend is on a free tier and may take ~30-60s to wake up on the first request after inactivity.)*
+
 A full-stack mock interview simulator that generates role-specific interview questions,
 evaluates your answers with AI, and gives you a scored performance report — so you can
 practice before the real thing.
@@ -10,17 +13,18 @@ Built with **Spring Boot** (Java), **React + TypeScript**, and **Google Gemini A
 
 ## Project Status
 
-This project is being built incrementally and documented step by step.
+This project was built incrementally and documented step by step, end to end -
+from an empty folder to a live, deployed product.
 
-- [ ] Project scaffold & architecture
-- [ ] Database entities (User, Interview, Question, Answer)
-- [ ] JWT authentication (register/login)
-- [ ] AI service integration (Gemini — question generation & answer evaluation)
-- [ ] Interview flow API (start → answer → complete → report)
-- [ ] React frontend (in progress)
-- [ ] Voice input (Web Speech API)
-- [ ] Coding round editor (Monaco)
-- [ ] Deployment
+- [x] Project scaffold & architecture
+- [x] Database entities (User, Interview, Question, Answer)
+- [x] JWT authentication (register/login)
+- [x] AI service integration (Gemini — question generation & answer evaluation)
+- [x] Interview flow API (start → answer → complete → report) — verified end-to-end via Postman
+- [x] React frontend — landing page, auth, dashboard, live interview session, report with charts
+- [x] Voice input (Web Speech API)
+- [x] Coding round with Monaco editor
+- [x] **Deployed live** — Render (backend) + Neon Postgres (database) + Vercel (frontend)
 
 ---
 
@@ -97,6 +101,7 @@ frontend/
 cd backend
 
 # Set your Gemini API key (required for AI features)
+export GEMINI_API_KEY=your_key_here      # macOS/Linux
 setx GEMINI_API_KEY "your_key_here"       # Windows (restart terminal after)
 
 mvn spring-boot:run
@@ -127,6 +132,21 @@ The frontend starts on **http://localhost:5173**.
 | `JWT_SECRET` | backend | Secret used to sign JWTs (defaults to a dev value — change in production) |
 | `FRONTEND_URL` | backend | Allowed CORS origin, defaults to `http://localhost:5173` |
 | `VITE_API_BASE_URL` | frontend | Backend API base URL, defaults to `http://localhost:8080/api` |
+
+---
+
+## Deployment Architecture
+
+| Piece | Service | Notes |
+|---|---|---|
+| Backend | [Render](https://render.com) | Docker deploy, free tier (spins down after inactivity) |
+| Database | [Neon](https://neon.tech) | Serverless Postgres, permanent free tier |
+| Frontend | [Vercel](https://vercel.com) | Static Vite build, deployed from `frontend/` |
+
+The backend runs a separate `application-prod.yml` Spring profile (activated via
+`SPRING_PROFILES_ACTIVE=prod`) that swaps the local H2 database for Postgres and
+requires all secrets to be set via environment variables — no defaults, so it fails
+fast if misconfigured rather than silently running insecurely.
 
 ---
 
