@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage'
 import InterviewSetupPage from './pages/InterviewSetupPage'
 import InterviewSessionPage from './pages/InterviewSessionPage'
 import InterviewReportPage from './pages/InterviewReportPage'
+import NotFoundPage from './pages/NotFoundPage'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -47,6 +48,9 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+      {/* Catch-all: must stay last */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }
