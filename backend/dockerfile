@@ -1,0 +1,23 @@
+# --- Stage 1: Build the application with Maven ---
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
+
+# Copy just the pom.xml first and download dependencies.
+# Docker caches this layer, so if only your code changes (not dependencies),
+# future builds skip re-downloading everything - much faster rebuilds.
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Now copy the actual source code and build the final jar
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# --- Stage 2: Run the application with just a lightweight JRE ---
+# We don't need Maven or build tools in the final image - only Java itself
+# to run the already-built jar. This keeps the deployed image small.
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
